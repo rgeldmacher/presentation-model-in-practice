@@ -21,6 +21,7 @@ public class MainActivityPresentationModel {
     public static final String PROPERTY_SHOW_FAVORITE_COLOR_VIEW = "showFavoriteColorView";
     public static final String PROPERTY_SHOW_NO_FAVORITE_COLOR_VIEW = "showNoFavoriteColorView";
 
+    @Nullable
     private MainActivityController controller;
 
     @Nullable
@@ -28,10 +29,6 @@ public class MainActivityPresentationModel {
 
     @Nullable
     private OnPropertyChangedListener propertyChangedListener;
-
-    public MainActivityPresentationModel(MainActivityController controller) {
-        this.controller = controller;
-    }
 
     public void setUser(@Nullable User user) {
         this.user = user;
@@ -42,11 +39,15 @@ public class MainActivityPresentationModel {
     }
 
     public void onSyncButtonClicked() {
-        controller.syncData();
+        if (controller != null) {
+            controller.syncData();
+        }
     }
 
     public void onShowOtherScreenButtonClicked() {
-        controller.showOtherScreen();
+        if (controller != null) {
+            controller.showOtherScreen();
+        }
     }
 
     @NonNull
@@ -69,6 +70,10 @@ public class MainActivityPresentationModel {
 
     public void setPropertyChangedListener(@Nullable OnPropertyChangedListener propertyChangedListener) {
         this.propertyChangedListener = propertyChangedListener;
+    }
+
+    public void setMainActivityController(@Nullable MainActivityController controller) {
+        this.controller = controller;
     }
 
     private void notifyPropertyChanged(String property) {

@@ -23,7 +23,8 @@ public class MainActivityPresentationModelTest {
     public void testOnSyncButtonClicked() {
         // prepare
         MainActivityController activityController = mock(MainActivityController.class);
-        MainActivityPresentationModel presentationModel = new MainActivityPresentationModel(activityController);
+        MainActivityPresentationModel presentationModel = new MainActivityPresentationModel();
+        presentationModel.setMainActivityController(activityController);
 
         // run
         presentationModel.onSyncButtonClicked();
@@ -36,7 +37,8 @@ public class MainActivityPresentationModelTest {
     public void testOnStartActivityButtonClicked() {
         // prepare
         MainActivityController activityController = mock(MainActivityController.class);
-        MainActivityPresentationModel presentationModel = new MainActivityPresentationModel(activityController);
+        MainActivityPresentationModel presentationModel = new MainActivityPresentationModel();
+        presentationModel.setMainActivityController(activityController);
 
         // run
         presentationModel.onShowOtherScreenButtonClicked();
@@ -49,7 +51,8 @@ public class MainActivityPresentationModelTest {
     public void testSetUser() {
         // prepare
         OnPropertyChangedListener propertyChangedListener = mock(OnPropertyChangedListener.class);
-        MainActivityPresentationModel presentationModel = new MainActivityPresentationModel(mock(MainActivityController.class));
+        MainActivityPresentationModel presentationModel = new MainActivityPresentationModel();
+        presentationModel.setMainActivityController(mock(MainActivityController.class));
         presentationModel.setPropertyChangedListener(propertyChangedListener);
         User user = new User();
         user.setUserName("Hans Test");
@@ -73,7 +76,8 @@ public class MainActivityPresentationModelTest {
     public void testSetUserNoFavoriteColor() {
         // prepare
         OnPropertyChangedListener propertyChangedListener = mock(OnPropertyChangedListener.class);
-        MainActivityPresentationModel presentationModel = new MainActivityPresentationModel(mock(MainActivityController.class));
+        MainActivityPresentationModel presentationModel = new MainActivityPresentationModel();
+        presentationModel.setMainActivityController(mock(MainActivityController.class));
         presentationModel.setPropertyChangedListener(propertyChangedListener);
         User user = new User();
         user.setUserName("Hans Test");

@@ -8,7 +8,7 @@ import android.view.View;
 
 public class AnimatedColorView extends View {
 
-    private int backgroundColor = R.color.transparent;
+    private int backgroundColor = R.color.white;
 
     public AnimatedColorView(Context context) {
         super(context);

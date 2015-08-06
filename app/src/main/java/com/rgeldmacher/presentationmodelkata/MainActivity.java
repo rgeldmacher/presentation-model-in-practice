@@ -3,6 +3,9 @@ package com.rgeldmacher.presentationmodelkata;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -15,11 +18,12 @@ import static com.rgeldmacher.presentationmodelkata.MainActivityPresentationMode
 public class MainActivity extends AppCompatActivity implements OnPropertyChangedListener, MainActivityPresentationModel.MainActivityController {
 
     private MainActivityPresentationModel presentationModel;
+    private User user;
 
     private TextView userNameView;
     private View favoriteColorView;
     private View noFavoriteColorView;
-    private User user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +36,26 @@ public class MainActivity extends AppCompatActivity implements OnPropertyChanged
         user.setUserName("Hans Test");
         user.setFavoriteColor(R.color.red);
 
-        presentationModel = new MainActivityPresentationModel(this);
-        presentationModel.setPropertyChangedListener(this);
-        presentationModel.setUser(user);
+        if (savedInstanceState == null) {
+            presentationModel = new MainActivityPresentationModel();
+            presentationModel.setUser(user);
+            presentationModel.setMainActivityController(this);
+            presentationModel.setPropertyChangedListener(this);
+        } else {
+            restoreData(this);
+            presentationModel.setMainActivityController(this);
+            presentationModel.setPropertyChangedListener(this);
+        }
+
+        bindData();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        presentationModel.setMainActivityController(null);
+        presentationModel.setPropertyChangedListener(null);
+        retainData(this);
+        super.onSaveInstanceState(outState);
     }
 
     private void bindViews() {
@@ -55,6 +76,13 @@ public class MainActivity extends AppCompatActivity implements OnPropertyChanged
                 presentationModel.onShowOtherScreenButtonClicked();
             }
         });
+    }
+
+    private void bindData() {
+        userNameView.setText(presentationModel.getUserName());
+        favoriteColorView.setBackgroundColor(getResources().getColor(presentationModel.getFavoriteColor()));
+        setViewVisibility(favoriteColorView, presentationModel.showFavoriteColorView());
+        setViewVisibility(noFavoriteColorView, presentationModel.showNoFavoriteColorView());
     }
 
     @Override
@@ -84,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements OnPropertyChanged
             @Override
             protected User doInBackground(Void... params) {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -118,6 +146,50 @@ public class MainActivity extends AppCompatActivity implements OnPropertyChanged
             view.setVisibility(View.VISIBLE);
         } else {
             view.setVisibility(View.GONE);
+        }
+    }
+
+    private static void retainData(MainActivity activity) {
+        MainActivityRetainedDataFragment retainedFragment = getRetainedFragment(activity);
+        if (retainedFragment != null) {
+            retainedFragment.retainedPresentationModel = activity.presentationModel;
+        }
+    }
+
+    private static void restoreData(MainActivity activity) {
+        MainActivityRetainedDataFragment retainedFragment = getRetainedFragment(activity);
+        if (retainedFragment != null) {
+            if (retainedFragment.retainedPresentationModel != null) {
+                activity.presentationModel = retainedFragment.retainedPresentationModel;
+            }
+        }
+    }
+
+    private static MainActivityRetainedDataFragment getRetainedFragment(FragmentActivity activity) {
+        if (activity != null && activity.getSupportFragmentManager() != null) {
+            FragmentManager fm = activity.getSupportFragmentManager();
+            Fragment retainedFragment = fm.findFragmentByTag(MainActivityRetainedDataFragment.FRAGMENT_TAG);
+            if (retainedFragment == null) {
+                retainedFragment = new MainActivityRetainedDataFragment();
+                fm.beginTransaction().add(retainedFragment, MainActivityRetainedDataFragment.FRAGMENT_TAG).commit();
+            }
+            if (retainedFragment instanceof MainActivityRetainedDataFragment) {
+                return (MainActivityRetainedDataFragment) retainedFragment;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retained fragment to store objects during orientation change.
+     */
+    public static class MainActivityRetainedDataFragment extends Fragment {
+
+        private static final String FRAGMENT_TAG = "SideActivityRetainedDataFragment";
+        MainActivityPresentationModel retainedPresentationModel;
+
+        public MainActivityRetainedDataFragment() {
+            setRetainInstance(true);
         }
     }
 }
