@@ -41,4 +41,16 @@
             android:layout_height="wrap_content"
             android:visibility="gone" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/syncButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Synchronize" />
+
+    <Button
+        android:id="@+id/startActivityButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show other activity" />
 </LinearLayout>

@@ -9,10 +9,19 @@ import android.support.annotation.Nullable;
  */
 public class MainActivityPresentationModel {
 
+    public interface MainActivityController {
+
+        void syncData();
+
+        void showOtherScreen();
+    }
+
     public static final String PROPERTY_USER_NAME = "userName";
     public static final String PROPERTY_FAVORITE_COLOR = "favoriteColor";
     public static final String PROPERTY_SHOW_FAVORITE_COLOR_VIEW = "showFavoriteColorView";
     public static final String PROPERTY_SHOW_NO_FAVORITE_COLOR_VIEW = "showNoFavoriteColorView";
+
+    private MainActivityController controller;
 
     @Nullable
     private User user;
@@ -20,12 +29,24 @@ public class MainActivityPresentationModel {
     @Nullable
     private OnPropertyChangedListener propertyChangedListener;
 
+    public MainActivityPresentationModel(MainActivityController controller) {
+        this.controller = controller;
+    }
+
     public void setUser(@Nullable User user) {
         this.user = user;
         notifyPropertyChanged(PROPERTY_USER_NAME);
         notifyPropertyChanged(PROPERTY_FAVORITE_COLOR);
         notifyPropertyChanged(PROPERTY_SHOW_FAVORITE_COLOR_VIEW);
         notifyPropertyChanged(PROPERTY_SHOW_NO_FAVORITE_COLOR_VIEW);
+    }
+
+    public void onSyncButtonClicked() {
+        controller.syncData();
+    }
+
+    public void onShowOtherScreenButtonClicked() {
+        controller.showOtherScreen();
     }
 
     @NonNull
@@ -55,4 +76,5 @@ public class MainActivityPresentationModel {
             propertyChangedListener.onPropertyChanged(property);
         }
     }
+
 }

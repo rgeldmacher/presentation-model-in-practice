@@ -1,5 +1,7 @@
 package com.rgeldmacher.presentationmodelkata;
 
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,13 +12,14 @@ import static com.rgeldmacher.presentationmodelkata.MainActivityPresentationMode
 import static com.rgeldmacher.presentationmodelkata.MainActivityPresentationModel.PROPERTY_SHOW_NO_FAVORITE_COLOR_VIEW;
 import static com.rgeldmacher.presentationmodelkata.MainActivityPresentationModel.PROPERTY_USER_NAME;
 
-public class MainActivity extends AppCompatActivity implements OnPropertyChangedListener {
+public class MainActivity extends AppCompatActivity implements OnPropertyChangedListener, MainActivityPresentationModel.MainActivityController {
 
     private MainActivityPresentationModel presentationModel;
 
     private TextView userNameView;
     private View favoriteColorView;
     private View noFavoriteColorView;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,27 +28,33 @@ public class MainActivity extends AppCompatActivity implements OnPropertyChanged
 
         bindViews();
 
-        final User user = new User();
+        user = new User();
         user.setUserName("Hans Test");
         user.setFavoriteColor(R.color.red);
 
-        presentationModel = new MainActivityPresentationModel();
+        presentationModel = new MainActivityPresentationModel(this);
         presentationModel.setPropertyChangedListener(this);
         presentationModel.setUser(user);
-
-        findViewById(R.id.userName).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                user.setFavoriteColor(R.color.blue);
-                presentationModel.setUser(user);
-            }
-        }, 2000);
     }
 
     private void bindViews() {
         userNameView = (TextView) findViewById(R.id.userName);
         favoriteColorView = findViewById(R.id.favColor);
         noFavoriteColorView = findViewById(R.id.noFavColor);
+
+        findViewById(R.id.syncButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presentationModel.onSyncButtonClicked();
+            }
+        });
+
+        findViewById(R.id.startActivityButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presentationModel.onShowOtherScreenButtonClicked();
+            }
+        });
     }
 
     @Override
@@ -66,6 +75,42 @@ public class MainActivity extends AppCompatActivity implements OnPropertyChanged
             default:
                 break;
         }
+    }
+
+    @Override
+    public void syncData() {
+        new AsyncTask<Void, Void, User>() {
+
+            @Override
+            protected User doInBackground(Void... params) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                User syncUser = new User();
+                syncUser.setUserName("Hans Test");
+                if (user.getFavoriteColor() == R.color.red) {
+                    syncUser.setFavoriteColor(R.color.blue);
+                } else {
+                    syncUser.setFavoriteColor(R.color.red);
+                }
+
+                return syncUser;
+            }
+
+            @Override
+            protected void onPostExecute(User newUser) {
+                user = newUser;
+                presentationModel.setUser(newUser);
+            }
+        }.execute();
+    }
+
+    @Override
+    public void showOtherScreen() {
+        startActivity(new Intent(this, EmptyActivity.class));
     }
 
     private void setViewVisibility(View view, boolean isVisible) {
