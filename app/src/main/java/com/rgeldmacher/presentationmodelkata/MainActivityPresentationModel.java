@@ -9,11 +9,23 @@ import android.support.annotation.Nullable;
  */
 public class MainActivityPresentationModel {
 
+    public static final String PROPERTY_USER_NAME = "userName";
+    public static final String PROPERTY_FAVORITE_COLOR = "favoriteColor";
+    public static final String PROPERTY_SHOW_FAVORITE_COLOR_VIEW = "showFavoriteColorView";
+    public static final String PROPERTY_SHOW_NO_FAVORITE_COLOR_VIEW = "showNoFavoriteColorView";
+
     @Nullable
     private User user;
 
+    @Nullable
+    private OnPropertyChangedListener propertyChangedListener;
+
     public void setUser(@Nullable User user) {
         this.user = user;
+        notifyPropertyChanged(PROPERTY_USER_NAME);
+        notifyPropertyChanged(PROPERTY_FAVORITE_COLOR);
+        notifyPropertyChanged(PROPERTY_SHOW_FAVORITE_COLOR_VIEW);
+        notifyPropertyChanged(PROPERTY_SHOW_NO_FAVORITE_COLOR_VIEW);
     }
 
     @NonNull
@@ -32,5 +44,15 @@ public class MainActivityPresentationModel {
 
     public boolean showNoFavoriteColorView() {
         return user == null || user.getFavoriteColor() == -1;
+    }
+
+    public void setPropertyChangedListener(@Nullable OnPropertyChangedListener propertyChangedListener) {
+        this.propertyChangedListener = propertyChangedListener;
+    }
+
+    private void notifyPropertyChanged(String property) {
+        if (propertyChangedListener != null) {
+            propertyChangedListener.onPropertyChanged(property);
+        }
     }
 }
