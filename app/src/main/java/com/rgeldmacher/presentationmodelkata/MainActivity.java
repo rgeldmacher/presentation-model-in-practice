@@ -8,6 +8,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private User user;
+    private MainActivityPresentationModel presentationModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,23 +18,24 @@ public class MainActivity extends AppCompatActivity {
         user = new User();
         user.setUserName("Hans Test");
         user.setFavoriteColor(R.color.red);
+        presentationModel = new MainActivityPresentationModel();
+        presentationModel.setUser(user);
 
         initViews();
     }
 
     private void initViews() {
-        ((TextView) findViewById(R.id.userName)).setText(user.getUserName());
-        View favColorView = findViewById(R.id.favColor);
-        View noFavColorView = findViewById(R.id.noFavColor);
+        ((TextView) findViewById(R.id.userName)).setText(presentationModel.getUserName());
+        findViewById(R.id.favColor).setBackgroundColor(getResources().getColor(presentationModel.getFavoriteColor()));
+        setViewVisibility(findViewById(R.id.favColor), presentationModel.showFavoriteColorView());
+        setViewVisibility(findViewById(R.id.noFavColor), presentationModel.showNoFavoriteColorView());
+    }
 
-        int colorRes = user.getFavoriteColor();
-        if (colorRes != -1) {
-            noFavColorView.setVisibility(View.GONE);
-            favColorView.setBackgroundColor(getResources().getColor(colorRes));
-            favColorView.setVisibility(View.VISIBLE);
+    private void setViewVisibility(View view, boolean isVisible) {
+        if (isVisible) {
+            view.setVisibility(View.VISIBLE);
         } else {
-            favColorView.setVisibility(View.GONE);
-            noFavColorView.setVisibility(View.VISIBLE);
+            view.setVisibility(View.GONE);
         }
     }
 }
